@@ -1,0 +1,60 @@
+---
+title: "STA 6543 Project"
+author: "Hannah Haley"
+date: '2022-07-24'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(AppliedPredictiveModeling); 
+library(lattice); 
+library(caret); 
+library(kernlab)
+library(earth); 
+library(car); 
+library(mlbench); 
+library(corrplot)
+library(e1071)
+library(DataExplorer)
+library(mice)
+library(VIM)
+library(pls)
+library(elasticnet)
+library(randomForest)
+library(MASS)
+library(lars)
+```
+
+## Introduction and Background:
+
+The objective of this analysis is to determine if a patient has diabetes by applying the statistical machine learning methods. The patient data can be found from the Pima Indians Diabetes Data.
+
+The machine learning methods used to construct this analysis were:`K-nearest neighbors,`
+
+## Data Structure:
+
+The structure of the data consists of 768 observations and 9 variables. Out of those 9 variables, there is one target variable, `Outcome`, and the rest are predictors variancles which includes the number of pregnancies the patient has had, their BMI, insulin level, age, and so on.
+
+```{r, echo=FALSE}
+library(readr)
+diabetes <- read_csv("Summer2022/STA6543/Group Project/diabetes.csv")
+head(diabetes)
+```
+
+## Statistical Learning Methods
+### Approach & Pre-processing
+
+Before we could apply any methods to analyze our data, we needed to ensure that it was processed, divided into a training and testing set, determine if any values were missing, check for correlation, skewness, and potential outliers. 
+
+```{r pressure, echo=FALSE}
+#partition
+inOutcomeTraining <- createDataPartition(y = diabetes$Outcome, times = 1, p = 0.75, list = FALSE)
+
+#training set
+diabetesTrain <- diabetes[inOutcomeTraining,]
+
+#testing set
+diabetesTest <- diabetes[-inOutcomeTraining,]
+```
+
