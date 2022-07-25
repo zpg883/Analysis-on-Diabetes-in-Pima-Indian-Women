@@ -19,7 +19,7 @@ library(e1071)
 library(DataExplorer)
 library(mice)
 library(VIM)
-library(pls)
+#library(pls)
 library(elasticnet)
 library(randomForest)
 library(MASS)
@@ -38,7 +38,8 @@ The structure of the data consists of 768 observations and 9 variables. Out of t
 
 ```{r, echo=FALSE}
 library(readr)
-diabetes <- read_csv("Summer2022/STA6543/Group Project/diabetes.csv")
+diabetes <- read_csv("diabetes.csv")
+diabetes <- data.frame(diabetes)
 head(diabetes)
 ```
 
@@ -48,6 +49,12 @@ head(diabetes)
 Before we could apply any methods to analyze our data, we needed to ensure that it was processed, divided into a training and testing set, determine if any values were missing, check for correlation, skewness, and potential outliers. 
 
 ```{r pressure, echo=FALSE}
+#check for zero variance first
+NZVdiabetes <- nearZeroVar(diabetes)
+noNZVdiabetes <- diabetes[,-NZVdiabetes]
+print(str(NZVdiabetes))
+dim(noNZVdiabetes)
+
 #partition
 inOutcomeTraining <- createDataPartition(y = diabetes$Outcome, times = 1, p = 0.75, list = FALSE)
 
@@ -57,4 +64,25 @@ diabetesTrain <- diabetes[inOutcomeTraining,]
 #testing set
 diabetesTest <- diabetes[-inOutcomeTraining,]
 ```
+**Observation:* There's no predictors with a zero variance. Also, as there are a small amount of observations, splitting the data 25/75 is a balanced approach for testing/training sets. 
+```{r, echo=FALSE}
+#check for correlation
+corr <- cor(diabetesTrain)
+corr
+##correlation matrix
+#corrplot::corrplot(corr, method = 'number', tl.cex = .35)
 
+corrplot(corr, method = 'number', tl.cex = .35)
+```
+```{r, echo =FALSE}
+#remove highly correlated
+highcorr <- findCorrelation(corr, cutoff = .75)
+head(highcorr)
+#check skewness
+##histograms
+#outlier detection
+##boxplots
+```
+**Observation:**
+-Talk about the highly correlated predictors
+-Observe that no predictor variables were removed from 0.75 cutoff. 
