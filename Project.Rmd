@@ -24,6 +24,10 @@ library(elasticnet)
 library(randomForest)
 library(MASS)
 library(lars)
+
+#for the missing values
+library(dplyr)
+library(naniar)
 ```
 
 ## Introduction and Background:
@@ -86,3 +90,23 @@ head(highcorr)
 **Observation:**
 -Talk about the highly correlated predictors
 -Observe that no predictor variables were removed from 0.75 cutoff. 
+
+
+
+Analysis of missing values:
+Insulin and SkinThickness are missing a significant number of observations.
+```{r}
+diabetes$Insulin <- na_if(diabetes$Insulin, 0)
+diabetes$Glucose <- na_if(diabetes$Glucose, 0)
+diabetes$BloodPressure <- na_if(diabetes$BloodPressure, 0)
+diabetes$SkinThickness <- na_if(diabetes$SkinThickness, 0)
+diabetes$BMI <- na_if(diabetes$BMI, 0)
+
+```
+
+
+```{r, warning=FALSE}
+vis_miss(diabetes)
+```
+
+
