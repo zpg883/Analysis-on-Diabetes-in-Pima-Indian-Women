@@ -34,7 +34,7 @@ library(naniar)
 
 The objective of this analysis is to determine if a patient has diabetes by applying the statistical machine learning methods. The patient data can be found from the Pima Indians Diabetes Data.
 
-The machine learning methods used to construct this analysis were:`K-nearest neighbors,`
+The machine learning methods used to construct this analysis were:`K-nearest neighbors,``SVM,`
 
 ## Data Structure:
 
