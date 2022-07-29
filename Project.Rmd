@@ -34,7 +34,7 @@ The machine learning methods used to construct this analysis were:`K-nearest nei
 
 ## Data Structure:
 
-The structure of the data consists of 768 observations and 9 variables. Out of those 9 variables, there is one target variable, `Outcome`, and the rest are predictors variancles which includes the number of pregnancies the patient has had, their BMI, insulin level, age, and so on.
+The structure of the data consists of 768 observations and 9 variables. Out of those 9 variables, there is one target variable, `Outcome`, and the rest are predictors variables which includes the number of pregnancies the patient has had, their BMI, insulin level, age, and so on.
 
 ```{r, echo=FALSE}
 library(readr)
@@ -79,6 +79,7 @@ corrplot(corr, method = 'number', tl.cex = .35)
 highcorr <- findCorrelation(corr, cutoff = .75)
 head(highcorr)
 #check skewness
+##missing values
 ##histograms
 #outlier detection
 ##boxplots
@@ -86,3 +87,11 @@ head(highcorr)
 **Observation:**
 -Talk about the highly correlated predictors
 -Observe that no predictor variables were removed from 0.75 cutoff. 
+
+
+```{r}
+#missing values next
+colSums(diabetes[1:8] == 0)
+
+```
+
