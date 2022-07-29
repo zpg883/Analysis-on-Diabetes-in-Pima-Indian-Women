@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 title: "STA 6543 Project"
 author: "Abigail Dastur, Hannah Haley, Rachael Humphreys, and Karla Wiedmer"
@@ -159,3 +160,166 @@ Variables with input values of 0 (missing data) were treated------
 ### ??? <- Abigail
 ```
 
+=======
+---
+title: "STA 6543 Project"
+author: "Abigail Dastur, Hannah Haley, Rachael Humphreys, and Karla Wiedmer"
+date: '2022-07-28'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(AppliedPredictiveModeling); 
+library(lattice); 
+library(caret); 
+library(kernlab)
+library(earth); 
+library(car); 
+library(mlbench); 
+library(corrplot)
+library(e1071)
+library(DataExplorer)
+library(mice)
+library(VIM)
+#library(pls)
+library(elasticnet)
+library(randomForest)
+library(MASS)
+library(lars)
+
+#for the missing values
+library(dplyr)
+library(naniar)
+```
+
+## Introduction and Background:
+
+The objective of this analysis is to determine if a patient has diabetes by applying the statistical machine learning methods. The patient data can be found from the Pima Indians Diabetes Data.
+
+The machine learning methods used to construct this analysis were:`K-nearest neighbors,`
+
+## Data Structure:
+
+The structure of the data consists of 768 observations and 9 variables. Out of those 9 variables, there is one target variable, `Outcome`, and the rest are predictors variables which includes the number of pregnancies the patient has had, their BMI, insulin level, age, and so on.
+
+```{r, echo=FALSE}
+library(readr)
+diabetes <- read_csv("diabetes.csv")
+diabetes <- data.frame(diabetes)
+head(diabetes)
+```
+
+## Statistical Learning Methods
+### Approach & Pre-processing
+
+Before we could apply any methods to analyze our data, we needed to ensure that it was processed, divided into a training and testing set, determine if any values were missing, check for correlation, skewness, and potential outliers. 
+
+#### Near Zero Variance
+```{r pressure, echo=FALSE}
+#check for zero variance first
+NZVdiabetes <- nearZeroVar(diabetes)
+noNZVdiabetes <- diabetes[,-NZVdiabetes]
+print(str(NZVdiabetes))
+dim(noNZVdiabetes)
+
+#partition
+inOutcomeTraining <- createDataPartition(y = diabetes$Outcome, times = 1, p = 0.75, list = FALSE)
+
+#training set
+diabetesTrain <- diabetes[inOutcomeTraining,]
+
+#testing set
+diabetesTest <- diabetes[-inOutcomeTraining,]
+```
+**Observation:* There's no predictors with a zero variance. Also, as there are a small amount of observations, splitting the data 25/75 is a balanced approach for testing/training sets.
+
+#### Correlation
+```{r, echo=FALSE}
+#check for correlation
+corr <- cor(diabetesTrain)
+corr
+##correlation matrix
+#corrplot::corrplot(corr, method = 'number', tl.cex = .35)
+
+corrplot(corr, method = 'number', tl.cex = .35)
+```
+```{r, echo =FALSE}
+#remove highly correlated
+highcorr <- findCorrelation(corr, cutoff = .75)
+head(highcorr)
+```
+**Observation:**
+---The highly correlated predictors are 
+It was also observed that no predictor variables were removed from 0.75 cutoff. 
+
+#### Missing Data
+```{r, echo=FALSE}
+#missing values next
+colSums(diabetes[1:8] == 0)
+
+```
+
+**Analysis of missing values:**
+Insulin and SkinThickness are missing a significant number of observations.
+```{r, echo=FALSE}
+diabetes$Insulin <- na_if(diabetes$Insulin, 0)
+diabetes$Glucose <- na_if(diabetes$Glucose, 0)
+diabetes$BloodPressure <- na_if(diabetes$BloodPressure, 0)
+diabetes$SkinThickness <- na_if(diabetes$SkinThickness, 0)
+diabetes$BMI <- na_if(diabetes$BMI, 0)
+```
+```{r, warning=FALSE, echo=FALSE}
+vis_miss(diabetes)
+```
+```{r, echo=FALSE}
+#variables cannot be zero, so balance them out either by mean, median, etc. 
+##Blood Pressure
+meanBlood <- mean(diabetesTrain$BloodPressure[diabetesTrain$BloodPressure > 0])
+diabetesTrain$BloodPressure<-ifelse(diabetesTrain$BloodPressure == 0, round(meanBlood,0), diabetesTrain$BloodPressure)
+
+##Insulin
+meanInsulin <-mean(diabetesTrain$Insulin[diabetesTrain$Insulin > 0])
+
+diabetesTrain$Insulin <- ifelse(diabetesTrain$Insulin == 0, round(meanInsulin,0), diabetesTrain$Insulin)
+
+##Skin Thickness
+meanSkin <- mean(diabetesTrain$SkinThickness[diabetesTrain$Glucose > 0])
+diabetesTrain$SkinThickness<-ifelse(diabetesTrain$SkinThickness == 0, round(meanSkin,0), diabetesTrain$Glucose)
+
+##Glucose
+meanGlucose <-mean(diabetesTrain$Glucose[diabetesTrain$Glucose > 0])
+diabetesTrain$Glucose <-ifelse(diabetesTrain$Glucose == 0, round(meanGlucose,0), diabetesTrain$Glucose)
+##BMI
+meanBMI <- mean(diabetesTrain$BMI [diabetesTrain$BMI  > 0])
+diabetesTrain$BMI<-ifelse(diabetesTrain$BMI  == 0, round(meanBMI ,0), diabetesTrain$BMI )
+
+#data after treating missing values
+summary(diabetesTrain)
+
+#correlation after missing values
+num_vars <- unlist(lapply(diabetesTrain, is.numeric))
+dia_nums <- diabetesTrain[ , num_vars]
+corr2 <- cor(dia_nums)
+corrplot(corr2, method = 'number', tl.cex = .35)
+```
+
+**Observation:**
+Variables with input values of 0 (missing data) were treated------
+
+#### Skewness & Outlier Detection
+```{r, echo=FALSE}
+##check skewness
+##outlier detection
+## MODELING NEXTTTTTT
+```
+
+### Statistical Learning Methods & Models
+```{r, echo=FALSE}
+### Knn <- Hannah
+### SVM <- Rachael
+### ??? <- Karla
+### ??? <- Abigail
+```
+
+>>>>>>> dec702352fcd1abd6dc33f8e8c6341d55382207b
