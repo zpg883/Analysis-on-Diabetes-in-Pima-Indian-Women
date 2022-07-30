@@ -362,16 +362,75 @@ SVMTune
 
 
 ```{r}
+set.seed(100)
 confusionMatrix(data = predict(SVMTune, diabetesTest[-9]), reference = diabetesTest$Outcome)
 ```
 
 
 
 
+SVM round 2 - Removing Insulin and Skin Thickness (doesn't make a big difference)
+```{r}
+diabetesTrain_minusInsulinSkin = diabetesTrain[-4]
+diabetesTrain_minusInsulinSkin = diabetesTrain_minusInsulinSkin[-4]
+
+diabetesTest_minusInsulinSkin = diabetesTest[-4]
+diabetesTest_minusInsulinSkin = diabetesTest_minusInsulinSkin[-4]
+
+```
 
 
 
+```{r}
+set.seed(100)
+
+svmctrl <- trainControl(summaryFunction = defaultSummary)
+
+sigmaRangeReduced <- sigest(as.matrix(diabetesTrain_minusInsulinSkin[-7]))
+svmRGridReduced <- expand.grid(.sigma = sigmaRangeReduced[1],
+                               .C = 2^(seq(-4, 4)))
+
+SVMTune <- train(x = diabetesTrain_minusInsulinSkin[-7],
+                 y = diabetesTrain_minusInsulinSkin$Outcome,
+                 method = "svmRadial", 
+                 metric = "Accuracy",
+                 preProc = c("center", "scale"),
+                 tuneGrid = svmRGridReduced,
+                 fit = FALSE,
+                 trControl = svmctrl)
+SVMTune
+```
 
 
+```{r}
+set.seed(100)
+confusionMatrix(data = predict(SVMTune, diabetesTest_minusInsulinSkin[-7]), reference = diabetesTest_minusInsulinSkin$Outcome)
+```
 
+
+Random Forest
+```{r}
+indx <- createFolds(diabetesTrain$Outcome, returnTrain = TRUE)
+ctrl <- trainControl(method = "cv", index = indx)
+
+mtryGrid <- data.frame(mtry = floor(seq(10, ncol(diabetesTrain[-9]), length = 10)))
+
+ptm <- proc.time() #takes 520.62 seconds to run in my computer
+### Tune the model using cross-validation
+set.seed(100)
+rf.fit <- train(x = diabetesTrain[-9],
+                 y = diabetesTrain$Outcome,
+                method = "rf",
+                tuneGrid = mtryGrid,
+                ntree = 200,
+                importance = TRUE,
+                trControl = ctrl)
+rf.fit
+proc.time() - ptm
+```
+
+
+```{r}
+confusionMatrix(data = predict(rf.fit, diabetesTest[-9]), reference = diabetesTest$Outcome)
+```
 
