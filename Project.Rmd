@@ -330,16 +330,18 @@ set.seed(200)
 
 knnGrid<- expand.grid(.k = c(3:10))
                       
-knncrtl <-trainControl(method = "cv", number = 10, classProbs = T, summaryFunction=twoClassSummary)
+indx <- createFolds(diabetesTrain$Outcome, returnTrain = TRUE)
+ctrl <- trainControl(method = "cv", index = indx)
 
 knn.model<- train(x = diabetesTrain[-9],
                  y = diabetesTrain$Outcome,
                 method = "knn",
                 tuneGrid = knnGrid,
-                ntree = 200,
-                importance = TRUE,
-                trControl = knncrtl)
+                trControl = ctrl,
+                tuneLength = 10,
+                preProcess = c("center","scale"))
 
+knn.model
 ```
 
 
