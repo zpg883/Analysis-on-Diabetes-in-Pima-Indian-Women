@@ -318,31 +318,33 @@ Variables with input values of 0 (missing data) were treated------
 
 >>>>>>> dec702352fcd1abd6dc33f8e8c6341d55382207b
 
-
-
-
-Change Outcome to a factor.
-```{r}
-
+```{r, echo=FALSE}
+#Change Outcome to a factor.
 diabetesTrain$Outcome <- as.factor(diabetesTrain$Outcome)
 diabetesTest$Outcome <- as.factor(diabetesTest$Outcome)
-
 ```
 
 ### K-Nearest Neighbor
-```{r}
+```{r, echo=FALSE}
 set.seed(200)
 
 knnGrid<- expand.grid(.k = c(3:10))
                       
-knncrtl<-trainControl(method = "cv", number = 10, classProbs = T, summaryFunction=twoClassSummary)
+knncrtl <-trainControl(method = "cv", number = 10, classProbs = T, summaryFunction=twoClassSummary)
 
-#knn.model<-
+knn.model<- train(x = diabetesTrain[-9],
+                 y = diabetesTrain$Outcome,
+                method = "knn",
+                tuneGrid = knnGrid,
+                ntree = 200,
+                importance = TRUE,
+                trControl = knncrtl)
+
 ```
 
 
 ### Support Vector Machines
-```{r}
+```{r, echo=FALSE}
 set.seed(100)
 
 svmctrl <- trainControl(summaryFunction = defaultSummary)
@@ -365,7 +367,7 @@ SVMTune
 
 
 
-```{r}
+```{r, echo=FALSE}
 set.seed(100)
 confusionMatrix(data = predict(SVMTune, diabetesTest[-9]), reference = diabetesTest$Outcome)
 ```
@@ -374,7 +376,7 @@ confusionMatrix(data = predict(SVMTune, diabetesTest[-9]), reference = diabetesT
 
 
 SVM round 2 - Removing Insulin and Skin Thickness (doesn't make a big difference)
-```{r}
+```{r, echo=FALSE}
 diabetesTrain_minusInsulinSkin = diabetesTrain[-4]
 diabetesTrain_minusInsulinSkin = diabetesTrain_minusInsulinSkin[-4]
 
@@ -385,7 +387,7 @@ diabetesTest_minusInsulinSkin = diabetesTest_minusInsulinSkin[-4]
 
 
 
-```{r}
+```{r, echo=FALSE}
 set.seed(100)
 
 svmctrl <- trainControl(summaryFunction = defaultSummary)
@@ -406,14 +408,14 @@ SVMTune
 ```
 
 
-```{r}
+```{r, echo=FALSE}
 set.seed(100)
 confusionMatrix(data = predict(SVMTune, diabetesTest_minusInsulinSkin[-7]), reference = diabetesTest_minusInsulinSkin$Outcome)
 ```
 
 
 Random Forest
-```{r}
+```{r, echo=FALSE}
 indx <- createFolds(diabetesTrain$Outcome, returnTrain = TRUE)
 ctrl <- trainControl(method = "cv", index = indx)
 
@@ -434,7 +436,7 @@ proc.time() - ptm
 ```
 
 
-```{r}
+```{r, echo=FALSE}
 confusionMatrix(data = predict(rf.fit, diabetesTest[-9]), reference = diabetesTest$Outcome)
 ```
 
