@@ -442,3 +442,15 @@ proc.time() - ptm
 confusionMatrix(data = predict(rf.fit, diabetesTest[-9]), reference = diabetesTest$Outcome)
 ```
 
+### Logistic Regression Model (Abi)
+```{r}
+set.seed(1000)
+
+ctrl <- trainControl(summaryFunction = defaultSummary)
+
+logisticTune  =  train(x = diabetesTrain[-9], y = diabetesTrain$Outcome, method = "multinom", metric = "Accuracy", trControl = ctrl)
+logisticTune
+
+plot(logisticTune, main = "Plot for shrinking threshold")
+```
+
