@@ -322,4 +322,56 @@ Variables with input values of 0 (missing data) were treated------
 ### ??? <- Abigail
 ```
 
+
 >>>>>>> dec702352fcd1abd6dc33f8e8c6341d55382207b
+
+
+
+
+Change Outcome to a factor.
+```{r}
+
+diabetesTrain$Outcome <- as.factor(diabetesTrain$Outcome)
+diabetesTest$Outcome <- as.factor(diabetesTest$Outcome)
+
+```
+
+
+Support Vector Machines
+```{r}
+set.seed(100)
+
+svmctrl <- trainControl(summaryFunction = defaultSummary)
+
+sigmaRangeReduced <- sigest(as.matrix(diabetesTrain[-9]))
+svmRGridReduced <- expand.grid(.sigma = sigmaRangeReduced[1],
+                               .C = 2^(seq(-4, 4)))
+
+SVMTune <- train(x = diabetesTrain[-9],
+                 y = diabetesTrain$Outcome,
+                 method = "svmRadial", 
+                 metric = "Accuracy",
+                 preProc = c("center", "scale"),
+                 tuneGrid = svmRGridReduced,
+                 fit = FALSE,
+                 trControl = svmctrl)
+SVMTune
+
+```
+
+
+
+```{r}
+confusionMatrix(data = predict(SVMTune, diabetesTest[-9]), reference = diabetesTest$Outcome)
+```
+
+
+
+
+
+
+
+
+
+
+
