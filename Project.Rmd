@@ -156,8 +156,8 @@ Variables with input values of 0 (missing data) were treated------
 ```{r, echo=FALSE}
 ### Knn <- Hannah
 ### SVM <- Rachael
-### ??? <- Karla
-### ??? <- Abigail
+### RandomForest <- Karla
+### Logistics <- Abigail
 ```
 
 =======
