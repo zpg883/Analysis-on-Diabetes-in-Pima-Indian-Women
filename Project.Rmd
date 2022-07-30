@@ -307,13 +307,6 @@ corrplot(corr2, method = 'number', tl.cex = .35)
 **Observation:**
 Variables with input values of 0 (missing data) were treated------
 
-#### Skewness & Outlier Detection
-```{r, echo=FALSE}
-##check skewness
-##outlier detection
-## MODELING NEXTTTTTT
-```
-
 ### Statistical Learning Methods & Models
 ```{r, echo=FALSE}
 ### Knn <- Hannah
@@ -336,8 +329,19 @@ diabetesTest$Outcome <- as.factor(diabetesTest$Outcome)
 
 ```
 
+### K-Nearest Neighbor
+```{r}
+set.seed(200)
 
-Support Vector Machines
+knnGrid<- expand.grid(.k = c(3:10))
+                      
+knncrtl<-trainControl(method = "cv", number = 10, classProbs = T, summaryFunction=twoClassSummary)
+
+#knn.model<-
+```
+
+
+### Support Vector Machines
 ```{r}
 set.seed(100)
 
