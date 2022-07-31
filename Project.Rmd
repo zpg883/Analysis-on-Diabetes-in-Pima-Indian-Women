@@ -1,5 +1,4 @@
 
-=======
 ---
 title: "STA 6543 Project"
 author: "Abigail Dastur, Hannah Haley, Rachael Humphreys, and Karla Wiedmer"
@@ -9,6 +8,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(readr)
 library(AppliedPredictiveModeling); 
 library(lattice); 
 library(caret); 
@@ -34,28 +34,34 @@ library(naniar)
 
 ## Introduction and Background:
 
-The objective of this analysis is to determine if a patient has diabetes by applying the statistical machine learning methods. The patient data can be found from the Pima Indians Diabetes Data.
+The objective of this analysis is to determine if a patient has diabetes by applying various statistical machine learning methods. The patient data can be found from the Pima Indians Diabetes Data.
 
-The machine learning methods used to construct this analysis were:`K-nearest neighbors,`
+The machine learning methods used to construct this analysis were:`K-nearest neighbors,` `Logistic Regression,` `Random Forest,` and `Support Vector Machine`.
 
 ## Data Structure:
 
-The structure of the data consists of 768 observations and 9 variables. Out of those 9 variables, there is one target variable, `Outcome`, and the rest are predictors variables which includes the number of pregnancies the patient has had, their BMI, insulin level, age, and so on.
+The structure of the data consists of 768 observations and 9 variables. Out of those 9 variables, there is one target variable, `Outcome`. The other eight variables are the predictor variables and includes the number of pregnancies the patient has had, their BMI, insulin level, age, and so on.
 
-```{r, echo=FALSE}
-library(readr)
+```{r, include=FALSE}
 diabetes <- read_csv("diabetes.csv")
 diabetes <- data.frame(diabetes)
+
+```
+
+```{r, echo=FALSE}
 head(diabetes)
 ```
+
 
 ## Statistical Learning Methods
 ### Approach & Pre-processing
 
-Before we could apply any methods to analyze our data, we needed to ensure that it was processed, divided into a training and testing set, determine if any values were missing, check for correlation, skewness, and potential outliers. 
+Before we could apply any methods to analyze our data, we needed to determine if there were any missing values, as well as check for correlation, skewness, and potential outliers. We also split the data into a training and testing set.
 
 #### Near Zero Variance
-```{r pressure, echo=FALSE}
+```{r,  results='hide', echo=FALSE}
+#I hid this output for now as I don't think it adds much visually in the report
+
 #check for zero variance first
 NZVdiabetes <- nearZeroVar(diabetes)
 noNZVdiabetes <- diabetes[,-NZVdiabetes]
@@ -71,26 +77,25 @@ diabetesTrain <- diabetes[inOutcomeTraining,]
 #testing set
 diabetesTest <- diabetes[-inOutcomeTraining,]
 ```
-**Observation:* There's no predictors with a zero variance. Also, as there are a small amount of observations, splitting the data 25/75 is a balanced approach for testing/training sets.
+**Observation:** It was observed that there are no predictors with near zero variance. Also, as there are a small amount of observations, splitting the data 25/75 is a balanced approach for testing/training sets.
 
 #### Correlation
 ```{r, echo=FALSE}
 #check for correlation
-corr <- cor(diabetesTrain)
+corr <- cor(diabetesTrain[-9])
 corr
 ##correlation matrix
 #corrplot::corrplot(corr, method = 'number', tl.cex = .35)
 
 corrplot(corr, method = 'number', tl.cex = .35)
 ```
-```{r, echo =FALSE}
+```{r, results='hide', echo=FALSE}
 #remove highly correlated
 highcorr <- findCorrelation(corr, cutoff = .75)
 head(highcorr)
 ```
 **Observation:**
----The highly correlated predictors are 
-It was also observed that no predictor variables were removed from 0.75 cutoff. 
+While some correlation was observed there were no variables that were removed using a 0.75 cutoff. 
 
 #### Missing Data
 ```{r, echo=FALSE}
@@ -100,7 +105,6 @@ colSums(diabetes[1:8] == 0)
 ```
 
 **Analysis of missing values:**
-Insulin and SkinThickness are missing a significant number of observations.
 ```{r, echo=FALSE}
 diabetes$Insulin <- na_if(diabetes$Insulin, 0)
 diabetes$Glucose <- na_if(diabetes$Glucose, 0)
@@ -111,7 +115,9 @@ diabetes$BMI <- na_if(diabetes$BMI, 0)
 ```{r, warning=FALSE, echo=FALSE}
 vis_miss(diabetes)
 ```
-```{r, echo=FALSE}
+```{r,  results='hide', echo=FALSE}
+#Also setting this to hide for now, as I think most of this was just doublechecking our solution.
+
 #variables cannot be zero, so balance them out either by mean, median, etc. 
 ##Blood Pressure
 meanBlood <- mean(diabetesTrain$BloodPressure[diabetesTrain$BloodPressure > 0])
@@ -144,33 +150,32 @@ corrplot(corr2, method = 'number', tl.cex = .35)
 ```
 
 **Observation:**
-Variables with input values of 0 (missing data) were treated------
+Insulin and SkinThickness are missing a significant number of observations. Two approaches were tried. The first was replacing the missing values with the column mean, and the second was removing the Insulin and SkinThickness columns. Either approach gave similar model results so it was decided to move forward with replacing the missing values with column mean for all columns.
 
 ### Statistical Learning Methods & Models
-```{r, echo=FALSE}
-### Knn <- Hannah
-### SVM <- Rachael
-### ??? <- Karla
-### ??? <- Abigail
-```
 
 
-
-
-```{r, echo=FALSE}
+```{r, result='hidden', echo=FALSE}
 #Change Outcome to a factor.
 diabetesTrain$Outcome <- as.factor(diabetesTrain$Outcome)
 diabetesTest$Outcome <- as.factor(diabetesTest$Outcome)
 ```
 
+```{r, result='hidden', echo=FALSE}
+#Setup control for the models
+set.seed(200)
+indx <- createFolds(diabetesTrain$Outcome, returnTrain = TRUE)
+ctrl <- trainControl(method = "cv", index = indx)
+```
+
+
+
 ### K-Nearest Neighbor
+Model results using training data.
 ```{r, echo=FALSE}
 set.seed(200)
 
 knnGrid<- expand.grid(.k = c(3:10))
-                      
-indx <- createFolds(diabetesTrain$Outcome, returnTrain = TRUE)
-ctrl <- trainControl(method = "cv", index = indx)
 
 knn.model<- train(x = diabetesTrain[-9],
                  y = diabetesTrain$Outcome,
@@ -183,8 +188,18 @@ knn.model<- train(x = diabetesTrain[-9],
 knn.model
 ```
 
+Model results using test data.
+```{r, echo=FALSE}
+set.seed(100)
+confusionMatrix(data = predict(knn.model, diabetesTest[-9]), reference = diabetesTest$Outcome)
+```
+
+**Observation:**
+It was observed that the best k value was 9, which gave an Accuracy of 0.7640956 and a Kappa value of 0.4681284 on the training data. When the test data was used we saw an Accuracy of 0.7812 and a Kappa value of 0.4894.
 
 ### Support Vector Machines
+
+Model results using training data.
 ```{r, echo=FALSE}
 set.seed(100)
 
@@ -206,56 +221,19 @@ SVMTune
 
 ```
 
-
-
+Model results using test data.
 ```{r, echo=FALSE}
 set.seed(100)
 confusionMatrix(data = predict(SVMTune, diabetesTest[-9]), reference = diabetesTest$Outcome)
 ```
 
+**Observation:**
+It was observed that the best C value was .5, which gave an Accuracy of 0.7638403 and a Kappa value of 0.446082093 on the training data. When the test data was used we saw an Accuracy of 0.7448 and a Kappa value of 0.3713.
 
 
 
-SVM round 2 - Removing Insulin and Skin Thickness (doesn't make a big difference)
-```{r, echo=FALSE}
-diabetesTrain_minusInsulinSkin = diabetesTrain[-4]
-diabetesTrain_minusInsulinSkin = diabetesTrain_minusInsulinSkin[-4]
 
-diabetesTest_minusInsulinSkin = diabetesTest[-4]
-diabetesTest_minusInsulinSkin = diabetesTest_minusInsulinSkin[-4]
-
-```
-
-
-
-```{r, echo=FALSE}
-set.seed(100)
-
-#svmctrl <- trainControl(summaryFunction = defaultSummary)
-
-sigmaRangeReduced <- sigest(as.matrix(diabetesTrain_minusInsulinSkin[-7]))
-svmRGridReduced <- expand.grid(.sigma = sigmaRangeReduced[1],
-                               .C = 2^(seq(-4, 4)))
-
-SVMTune_minuscolumns <- train(x = diabetesTrain_minusInsulinSkin[-7],
-                 y = diabetesTrain_minusInsulinSkin$Outcome,
-                 method = "svmRadial", 
-                 metric = "Accuracy",
-                 preProc = c("center", "scale"),
-                 tuneGrid = svmRGridReduced,
-                 fit = FALSE,
-                 trControl = ctrl)
-SVMTune_minuscolumns
-```
-
-
-```{r, echo=FALSE}
-set.seed(100)
-confusionMatrix(data = predict(SVMTune_minuscolumns, diabetesTest_minusInsulinSkin[-7]), reference = diabetesTest_minusInsulinSkin$Outcome)
-```
-
-
-Random Forest
+### Random Forest
 ```{r, echo=FALSE}
 #indx <- createFolds(diabetesTrain$Outcome, returnTrain = TRUE)
 #ctrl <- trainControl(method = "cv", index = indx)
@@ -303,6 +281,31 @@ Checking out resamples just to see
 res = resamples(list(Logistic = logisticTune, SVM = SVMTune, RF=rf.fit, KNN=knn.model, SVM_WithoutInsulinSkin=SVMTune_minuscolumns))
 dotplot(res)
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
