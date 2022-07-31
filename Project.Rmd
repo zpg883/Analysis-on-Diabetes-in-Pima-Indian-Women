@@ -231,9 +231,9 @@ confusionMatrix(data = predict(SVMTune, diabetesTest[-9]), reference = diabetesT
 It was observed that the best C value was .5, which gave an Accuracy of 0.7638403 and a Kappa value of 0.446082093 on the training data. When the test data was used we saw an Accuracy of 0.7448 and a Kappa value of 0.3713.
 
 
-
-
 ### Random Forest
+
+Model results using training data.
 ```{r, echo=FALSE}
 #indx <- createFolds(diabetesTrain$Outcome, returnTrain = TRUE)
 #ctrl <- trainControl(method = "cv", index = indx)
@@ -254,12 +254,18 @@ rf.fit
 proc.time() - ptm
 ```
 
-
+Model results using test data.
 ```{r, echo=FALSE}
 confusionMatrix(data = predict(rf.fit, diabetesTest[-9]), reference = diabetesTest$Outcome)
 ```
 
-### Logistic Regression Model (Abi)
+**Observation:**
+It was observed that the best mtry value was 8, which gave an Accuracy of 0.7446912 and a Kappa value of 0.4238059 on the training data. When the test data was used we saw an Accuracy of 0.7865 and a Kappa value of 0.5108.
+
+
+### Logistic Regression Model 
+
+Model results using training data.
 ```{r, echo=FALSE}
 set.seed(1000)
 
@@ -275,10 +281,32 @@ logisticTune
 plot(logisticTune, main = "Plot for shrinking threshold")
 ```
 
+Model results using test data.
+```{r, echo=FALSE}
+confusionMatrix(data = predict(logisticTune, diabetesTest[-9]), reference = diabetesTest$Outcome)
+```
 
-Checking out resamples just to see
-```{r}
-res = resamples(list(Logistic = logisticTune, SVM = SVMTune, RF=rf.fit, KNN=knn.model, SVM_WithoutInsulinSkin=SVMTune_minuscolumns))
+**Observation:**
+It was observed that the best decay value was 0.1, which gave an Accuracy of 0.7517995 and a Kappa value of 0.4199683 on the training data. When the test data was used we saw an Accuracy of 0.8385 and a Kappa value of 0.6217.
+
+
+#### Summary of Test Results
+Model | Accuracy | Kappa
+------------- | ------------- | -------------
+K Nearest | 0.7812 | 0.4894
+SVM | 0.7448 | 0.3713
+Random Forest | 0.7865 | 0.5108
+Logistic Regression | 0.8385 | 0.6217
+
+
+
+
+
+
+
+Checking out resamples just to see, we can delete this if we don't end up wanting to include it
+```{r, echo=FALSE}
+res = resamples(list(Logistic = logisticTune, SVM = SVMTune, RF=rf.fit, KNN=knn.model))
 dotplot(res)
 ```
 
