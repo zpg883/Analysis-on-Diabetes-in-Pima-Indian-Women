@@ -36,6 +36,9 @@ library(naniar)
 
 ## Introduction and Background:
 
+The background of the study for the Pima Indian Dataset was conducted by scientists to analyze the significance of health related variables (predictors) to diabetes in Pima Indians Women. The samples' population was made up of females aged 21 years and older. Alongside, the population had an heritage of diabetes and digestive and kidney diseases.
+
+
 The objective of this analysis is to determine if a patient has diabetes by applying various statistical machine learning methods. The patient data can be found from the Pima Indians Diabetes Data.
 
 The machine learning methods used to construct this analysis were:`K-nearest neighbors,` `Logistic Regression,` `Random Forest,` and `Support Vector Machine`.
@@ -98,9 +101,9 @@ diabetesTest <- diabetes[-inOutcomeTraining,]
 corr <- cor(diabetesTrain[-9])
 corr
 ##correlation matrix
-#corrplot::corrplot(corr, method = 'number', tl.cex = .35)
+corrplot::corrplot(corr, method = 'number', tl.cex = .35)
 
-corrplot(corr, method = 'number', tl.cex = .35)
+#corrplot(corr, method = 'number', tl.cex = .35)
 ```
 ```{r, results='hide', echo=FALSE}
 #remove highly correlated
@@ -159,7 +162,7 @@ summary(diabetesTrain)
 num_vars <- unlist(lapply(diabetesTrain, is.numeric))
 dia_nums <- diabetesTrain[ , num_vars]
 corr2 <- cor(dia_nums)
-corrplot(corr2, method = 'number', tl.cex = .35)
+corrplot::corrplot(corr2, method = 'number', tl.cex = .35)
 ```
 
 **Observation:**
@@ -184,6 +187,7 @@ ctrl <- trainControl(method = "cv", index = indx)
 
 
 ### K-Nearest Neighbor
+The KNN model is good for the analysis because it does
 Model results using training data.
 ```{r, echo=FALSE}
 set.seed(200)
