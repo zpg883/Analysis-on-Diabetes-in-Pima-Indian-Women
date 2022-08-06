@@ -287,6 +287,7 @@ It was observed that the best mtry value was 8, which gave an Accuracy of 0.7446
 
 
 ### Logistic Regression Model 
+Logistic Regression model is good for our analysis because it is supervised learning which is used to calculate the prediction of a binary event occurring. This is perfect for our analysis to determine if a patient has diabetes in relation to other health issues.
 
 Model results using training data.
 ```{r, echo=FALSE}
