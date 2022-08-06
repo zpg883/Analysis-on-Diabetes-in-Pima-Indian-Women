@@ -230,31 +230,51 @@ Support Vector Machine is supervised learning and constructs hyper plane surface
 Model results using training data.
 
 ```{r, echo=FALSE}
+
+diabetesYesNo = diabetesTrain
+diabetesYesNo$Outcome <- ifelse(grepl("1", diabetesTrain$Outcome), "Diabetic", "NonDiabetic")
+
+diabetesTestYesNo = diabetesTest
+diabetesTestYesNo$Outcome <- ifelse(grepl("1", diabetesTest$Outcome), "Diabetic", "NonDiabetic")
+
+diabetesYesNo$Outcome <- as.factor(diabetesYesNo$Outcome)
+diabetesTestYesNo$Outcome <- as.factor(diabetesTestYesNo$Outcome)
+
 set.seed(100)
 
 #svmctrl <- trainControl(summaryFunction = defaultSummary)
-
+svmctrl <- trainControl(method = "LGOCV",
+                    # summaryFunction = twoClassSummary,
+                    classProbs = TRUE,
+                   savePredictions = TRUE)
 sigmaRangeReduced <- sigest(as.matrix(diabetesTrain[-9]))
 svmRGridReduced <- expand.grid(.sigma = sigmaRangeReduced[1],
                                .C = 2^(seq(-4, 4)))
 
-SVMTune <- train(x = diabetesTrain[-9],
-                 y = diabetesTrain$Outcome,
+SVMTune <- train(x = diabetesYesNo[-9],
+                 y = diabetesYesNo$Outcome,
                  method = "svmRadial", 
-                 metric = "Accuracy",
+                 metric = "ROC",
                  preProc = c("center", "scale"),
                  tuneGrid = svmRGridReduced,
                  fit = FALSE,
-                 trControl = ctrl)
+                 trControl = svmctrl)
 SVMTune
 
 ```
 
+
+
 Model results using test data.
-```{r, echo=FALSE}
+```{r}
 set.seed(100)
-confusionMatrix(data = predict(SVMTune, diabetesTest[-9]), reference = diabetesTest$Outcome)
+
+confusionMatrix(data = predict(SVMTune, diabetesTestYesNo[-9]), reference = diabetesTestYesNo$Outcome)
+
 ```
+
+
+
 
 **Observation:**
 It was observed that the best C value was .5, which gave an Accuracy of 0.7638403 and a Kappa value of 0.446082093 on the training data. When the test data was used we saw an Accuracy of 0.7448 and a Kappa value of 0.3713.
@@ -329,6 +349,44 @@ K Nearest | 0.7812 | 0.4894
 SVM | 0.7448 | 0.3713
 Random Forest | 0.7865 | 0.5108
 Logistic Regression | 0.8385 | 0.6217
+
+
+
+
+
+```{r}
+testResults <- data.frame(knn = predict(knn.model, diabetesTest[-9],type="prob")[,1])
+
+testResults$SVM <- data.frame(svm = predict(SVMTune, diabetesTestYesNo[,1:8],type="prob")[,1])
+
+testResults$RF = predict(rf.fit, diabetesTest[-9],type="prob")[,1]
+
+testResults$Logistic = predict(logisticTune, diabetesTest[-9],type="prob")[,1]
+```
+
+
+```{r}
+library(pROC)
+
+# ROC for KNN
+KNNROC <- roc(diabetesTest$Outcome, testResults$knn)
+plot(KNNROC, col=1, lty=1, lwd=2)
+
+# ROC for RandomForest
+RFROC <- roc(diabetesTest$Outcome, testResults$RF)
+lines(RFROC, col=2, lty=2, lwd=2)
+
+# ROC for SVM
+SVMROC <- roc(diabetesTestYesNo$Outcome, testResults$SVM$svm)
+lines(SVMROC, col=3, lty=3, lwd=2)
+
+# ROC for Logistic
+LOGROC <- roc(diabetesTest$Outcome, testResults$Logistic)
+lines(LOGROC, col=4, lty=4, lwd=2)
+
+legend('bottomright', c('KNN', 'RF', 'SVM','LOG'), col=1:4, lty=1:4,lwd=2)
+```
+
 
 
 
