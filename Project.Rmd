@@ -184,11 +184,12 @@ indx <- createFolds(diabetesTrain$Outcome, returnTrain = TRUE)
 ctrl <- trainControl(method = "cv", index = indx)
 ```
 
-
-
 ### K-Nearest Neighbor
-The KNN model is good for the analysis because it does
+
+The KNN model is good for the analysis because it is a good classifier for small datasets.
+
 Model results using training data.
+
 ```{r, echo=FALSE}
 set.seed(200)
 
@@ -206,17 +207,21 @@ knn.model
 ```
 
 Model results using test data.
+
 ```{r, echo=FALSE}
 set.seed(100)
 confusionMatrix(data = predict(knn.model, diabetesTest[-9]), reference = diabetesTest$Outcome)
 ```
 
 **Observation:**
+
 It was observed that the best k value was 9, which gave an Accuracy of 0.7640956 and a Kappa value of 0.4681284 on the training data. When the test data was used we saw an Accuracy of 0.7812 and a Kappa value of 0.4894.
 
 ### Support Vector Machines
+Support Vector Machine is a supervised learning and constructs hyper plane surfaces that predicts whether the examples fall into one class or other separated by a margin and classifies examples with a largest margin.
 
 Model results using training data.
+
 ```{r, echo=FALSE}
 set.seed(100)
 
