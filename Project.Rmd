@@ -58,13 +58,20 @@ head(diabetes)
 ```
 
 ```{r, echo=FALSE}
-diabetes %>%
-  group_by(Outcome) %>% 
+diabetesYesNo = diabetes
+
+diabetesYesNo$YesNo <- ifelse(grepl("1", diabetes$Outcome), "Diabetic", "Not Diabetic")
+
+diabetesYesNo %>%
+  group_by(YesNo) %>% 
   summarise(Outcome_n = n()) %>% 
-  ggplot(aes(x = Outcome, y = Outcome_n)) +
-  geom_col(aes(fill = Outcome)) +
-  labs(title = "Distribution of Response Variable",x = "Diabetes", y = "") +
+  ggplot(aes(x = YesNo, y = Outcome_n)) +
+  geom_col(aes(fill = YesNo)) +
+  labs(x = "Diabetes Status", y = "", title= "Distribution of Response Variable") +
   theme(legend.position="none")
+
+remove(diabetesYesNo)
+
 
 ```
 
