@@ -27,6 +27,8 @@ library(randomForest)
 library(MASS)
 library(lars)
 
+library(ggplot2)
+
 #for the missing values
 library(dplyr)
 library(naniar)
@@ -40,7 +42,7 @@ The machine learning methods used to construct this analysis were:`K-nearest nei
 
 ## Data Structure:
 
-The structure of the data consists of 768 observations and 9 variables. Out of those 9 variables, there is one target variable, `Outcome`. The other eight variables are the predictor variables and includes the number of pregnancies the patient has had, their BMI, insulin level, age, and so on.
+The structure of the data consists of 768 observations and 9 variables. Out of those 9 variables, there is one target variable, `Outcome`. The other eight variables are the predictor variables and includes the number of pregnancies the patient has had, their BMI, insulin level, age, and so on. Outcome was listed as 1 for a person with diabetes, and 0 for a person without diabetes. The data contains about twice as many examples of people without diabetes compared to people with diabetes.
 
 ```{r, include=FALSE}
 diabetes <- read_csv("diabetes.csv")
@@ -50,6 +52,17 @@ diabetes <- data.frame(diabetes)
 
 ```{r, echo=FALSE}
 head(diabetes)
+```
+
+```{r, echo=FALSE}
+diabetes %>%
+  group_by(Outcome) %>% 
+  summarise(Outcome_n = n()) %>% 
+  ggplot(aes(x = Outcome, y = Outcome_n)) +
+  geom_col(aes(fill = Outcome)) +
+  labs(x = "Diabetes", y = "") +
+  theme(legend.position="none")
+
 ```
 
 
