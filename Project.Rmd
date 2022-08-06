@@ -313,6 +313,7 @@ confusionMatrix(data = predict(logisticTune, diabetesTest[-9]), reference = diab
 **Observation:**
 It was observed that the best decay value was 0.1, which gave an Accuracy of 0.7517995 and a Kappa value of 0.4199683 on the training data. When the test data was used we saw an Accuracy of 0.8385 and a Kappa value of 0.6217.
 
+### Conclusion:
 
 #### Summary of Test Results
 Model | Accuracy | Kappa
@@ -325,16 +326,14 @@ Logistic Regression | 0.8385 | 0.6217
 
 
 
-
-
-
 Checking out resamples just to see, we can delete this if we don't end up wanting to include it
 ```{r, echo=FALSE}
 res = resamples(list(Logistic = logisticTune, SVM = SVMTune, RF=rf.fit, KNN=knn.model))
 dotplot(res)
 ```
 
-
+**Conclusion:**
+In conclusion, the method that performs the best model was the Logistic Regression. As a result of Logistic Regression performing the best, it is a binary approach which works well with the Pima Indian dataset as it was a binary dataset. Our conclusion is based on the Kappa and Accucracy levels. 
 
 
 
