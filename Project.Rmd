@@ -254,6 +254,7 @@ It was observed that the best C value was .5, which gave an Accuracy of 0.763840
 
 
 ### Random Forest
+Random Forest is an extension of the decision tree and it produces different categories based on the predictors. This method is good for our analysis so that way we can categorize each health-related predictor.
 
 Model results using training data.
 ```{r, echo=FALSE}
