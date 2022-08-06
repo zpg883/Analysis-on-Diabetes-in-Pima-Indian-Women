@@ -420,15 +420,6 @@ legend('bottomright', c('KNN', 'RF', 'SVM','LOG'), col=1:4, lty=1:4,lwd=2)
 ```
 
 
-
-
-
-Checking out resamples just to see, we can delete this if we don't end up wanting to include it
-```{r, echo=FALSE}
-res = resamples(list(Logistic = logisticTune, SVM = SVMTune, RF=rf.fit, KNN=knn.model))
-dotplot(res)
-```
-
 **Conclusion:**
 In conclusion, the method that performs the best model was the Logistic Regression. As a result of Logistic Regression performing the best, it is a binary approach which works well with the Pima Indian dataset as it was a binary dataset. Our conclusion is based on the Kappa and Accuracy levels. 
 
