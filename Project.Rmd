@@ -218,7 +218,7 @@ confusionMatrix(data = predict(knn.model, diabetesTest[-9]), reference = diabete
 It was observed that the best k value was 9, which gave an Accuracy of 0.7640956 and a Kappa value of 0.4681284 on the training data. When the test data was used we saw an Accuracy of 0.7812 and a Kappa value of 0.4894.
 
 ### Support Vector Machines
-Support Vector Machine is a supervised learning and constructs hyper plane surfaces that predicts whether the examples fall into one class or other separated by a margin and classifies examples with a largest margin.
+Support Vector Machine is supervised learning and constructs hyper plane surfaces that predicts whether the examples fall into one class or another separated by a margin and classifies examples with the largest margin.
 
 Model results using training data.
 
@@ -254,7 +254,7 @@ It was observed that the best C value was .5, which gave an Accuracy of 0.763840
 
 
 ### Random Forest
-Random Forest is an extension of the decision tree and it produces different categories based on the predictors. This method is good for our analysis so that way we can categorize each health-related predictor.
+Random Forest is an extension of the decision tree and it produces different categories based on the predictors. This method is good for our analysis so we can categorize each health-related predictor.
 
 Model results using training data.
 ```{r, echo=FALSE}
@@ -283,7 +283,7 @@ confusionMatrix(data = predict(rf.fit, diabetesTest[-9]), reference = diabetesTe
 ```
 
 **Observation:**
-It was observed that the best mtry value was 8, which gave an Accuracy of 0.7446912 and a Kappa value of 0.4238059 on the training data. When the test data was used we saw an Accuracy of 0.7865 and a Kappa value of 0.5108.
+It was observed that the best mtry value was 9, which gave an Accuracy of 0.7587114 and a Kappa value of 0.4490350 on the training data. When the test data was used we saw an Accuracy of 0.7865 and a Kappa value of 0.5108.
 
 
 ### Logistic Regression Model 
@@ -333,7 +333,7 @@ dotplot(res)
 ```
 
 **Conclusion:**
-In conclusion, the method that performs the best model was the Logistic Regression. As a result of Logistic Regression performing the best, it is a binary approach which works well with the Pima Indian dataset as it was a binary dataset. Our conclusion is based on the Kappa and Accucracy levels. 
+In conclusion, the method that performs the best model was the Logistic Regression. As a result of Logistic Regression performing the best, it is a binary approach which works well with the Pima Indian dataset as it was a binary dataset. Our conclusion is based on the Kappa and Accuracy levels. 
 
 
 
