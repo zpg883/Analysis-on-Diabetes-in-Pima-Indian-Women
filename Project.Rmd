@@ -63,7 +63,7 @@ diabetes %>%
   summarise(Outcome_n = n()) %>% 
   ggplot(aes(x = Outcome, y = Outcome_n)) +
   geom_col(aes(fill = Outcome)) +
-  labs(x = "Diabetes", y = "") +
+  labs(title = "Distribution of Response Variable",x = "Diabetes", y = "") +
   theme(legend.position="none")
 
 ```
