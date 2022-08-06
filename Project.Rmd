@@ -217,7 +217,9 @@ Model results using test data.
 
 ```{r, echo=FALSE}
 set.seed(100)
-confusionMatrix(data = predict(knn.model, diabetesTest[-9]), reference = diabetesTest$Outcome)
+
+knn.conf = confusionMatrix(data = predict(knn.model, diabetesTest[-9]), reference = diabetesTest$Outcome)
+knn.conf
 ```
 
 **Observation:**
@@ -269,7 +271,8 @@ Model results using test data.
 ```{r, echo=FALSE}
 set.seed(100)
 
-confusionMatrix(data = predict(SVMTune, diabetesTestYesNo[-9]), reference = diabetesTestYesNo$Outcome)
+svm.conf = confusionMatrix(data = predict(SVMTune, diabetesTestYesNo[-9]), reference = diabetesTestYesNo$Outcome)
+svm.conf
 
 ```
 
@@ -306,7 +309,8 @@ proc.time() - ptm
 
 Model results using test data.
 ```{r, echo=FALSE}
-confusionMatrix(data = predict(rf.fit, diabetesTest[-9]), reference = diabetesTest$Outcome)
+rf.conf = confusionMatrix(data = predict(rf.fit, diabetesTest[-9]), reference = diabetesTest$Outcome)
+rf.conf
 ```
 
 **Observation:**
@@ -329,12 +333,13 @@ logisticTune  =  train(x = diabetesTrain[-9],
                        trControl = ctrl)
 logisticTune
 
-plot(logisticTune, main = "Plot for shrinking threshold")
+#plot(logisticTune, main = "Plot for shrinking threshold")
 ```
 
 Model results using test data.
 ```{r, echo=FALSE}
-confusionMatrix(data = predict(logisticTune, diabetesTest[-9]), reference = diabetesTest$Outcome)
+log.conf = confusionMatrix(data = predict(logisticTune, diabetesTest[-9]), reference = diabetesTest$Outcome)
+log.conf
 ```
 
 **Observation:**
@@ -343,13 +348,40 @@ It was observed that the best decay value was 0.1, which gave an Accuracy of 0.7
 ### Conclusion:
 
 #### Summary of Test Results
-Model | Accuracy | Kappa
-------------- | ------------- | -------------
-K Nearest | 0.7812 | 0.4894
-SVM | 0.7448 | 0.3713
-Random Forest | 0.7865 | 0.5108
-Logistic Regression | 0.8385 | 0.6217
+```{r, echo=FALSE}
+knnConf = knn.conf$overall
+knn.acc = knnConf["Accuracy"]
+knn.kappa = knnConf["Kappa"]
 
+svmConf = svm.conf$overall
+svm.acc = svmConf["Accuracy"]
+svm.kappa = svmConf["Kappa"]
+
+logConf = log.conf$overall
+log.acc = logConf["Accuracy"]
+log.kappa = logConf["Kappa"]
+
+rfConf = rf.conf$overall
+rf.acc = rfConf["Accuracy"]
+rf.kappa = rfConf["Kappa"]
+
+Accuracy <-Kappa<-numeric(0)
+Accuracy[1] = knn.acc
+Kappa[1] = knn.kappa
+
+Accuracy[2] = svm.acc
+Kappa[2] = svm.kappa
+
+Accuracy[3] = rf.acc
+Kappa[3] = rf.kappa
+
+Accuracy[4] = log.acc
+Kappa[4] = log.kappa
+
+performance.results = cbind(Accuracy, Kappa)
+row.names(performance.results) = c("KNN", "SVM", "Random Forest", "Logistic")
+performance.results
+```
 
 
 
