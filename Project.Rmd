@@ -229,7 +229,7 @@ Support Vector Machine is supervised learning and constructs hyper plane surface
 
 Model results using training data.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE}
 
 diabetesYesNo = diabetesTrain
 diabetesYesNo$Outcome <- ifelse(grepl("1", diabetesTrain$Outcome), "Diabetic", "NonDiabetic")
@@ -266,7 +266,7 @@ SVMTune
 
 
 Model results using test data.
-```{r}
+```{r, echo=FALSE}
 set.seed(100)
 
 confusionMatrix(data = predict(SVMTune, diabetesTestYesNo[-9]), reference = diabetesTestYesNo$Outcome)
@@ -354,7 +354,7 @@ Logistic Regression | 0.8385 | 0.6217
 
 
 
-```{r}
+```{r, echo=FALSE}
 testResults <- data.frame(knn = predict(knn.model, diabetesTest[-9],type="prob")[,1])
 
 testResults$SVM <- data.frame(svm = predict(SVMTune, diabetesTestYesNo[,1:8],type="prob")[,1])
@@ -365,7 +365,7 @@ testResults$Logistic = predict(logisticTune, diabetesTest[-9],type="prob")[,1]
 ```
 
 
-```{r}
+```{r, echo=FALSE, warning=FALSE}
 library(pROC)
 
 # ROC for KNN
