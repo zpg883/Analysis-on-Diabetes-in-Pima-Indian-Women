@@ -3,7 +3,9 @@
 title: "STA 6543 Project"
 author: "Abigail Dastur, Hannah Haley, Rachael Humphreys, and Karla Wiedmer"
 date: '2022-07-28'
-output: html_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -36,10 +38,9 @@ library(naniar)
 
 ## Introduction and Background:
 
-The background of the study for the Pima Indian Dataset was conducted by scientists to analyze the significance of health related variables (predictors) to diabetes in Pima Indians Women. The samples' population was made up of females aged 21 years and older. Alongside, the population had an heritage of diabetes and digestive and kidney diseases.
+The background of the study for the Pima Indian Dataset was conducted by scientists to analyze the significance of health related variables (predictors) to diabetes in Pima Indian Women. The samples' population was made up of females aged 21 years and older. Alongside, the population had an heritage of diabetes and digestive and kidney diseases.
 
-
-The objective of this analysis is to determine if a patient has diabetes by applying various statistical machine learning methods. The patient data can be found from the Pima Indians Diabetes Data.
+The objective of this analysis is to predict if a patient has diabetes by applying various statistical machine learning methods. The patient data can be found from the Pima Indians Diabetes Data.
 
 The machine learning methods used to construct this analysis were:`K-nearest neighbors,` `Logistic Regression,` `Random Forest,` and `Support Vector Machine`.
 
@@ -208,6 +209,7 @@ knn.model<- train(x = diabetesTrain[-9],
                 tuneGrid = knnGrid,
                 trControl = ctrl,
                 tuneLength = 10,
+                metric="Accuracy",
                 preProcess = c("center","scale"))
 
 knn.model
@@ -218,13 +220,13 @@ Model results using test data.
 ```{r, echo=FALSE}
 set.seed(100)
 
-knn.conf = confusionMatrix(data = predict(knn.model, diabetesTest[-9]), reference = diabetesTest$Outcome)
+knn.conf = confusionMatrix(data = predict(knn.model, diabetesTest[-9]), reference = diabetesTest$Outcome, positive="1")
 knn.conf
 ```
 
 **Observation:**
 
-It was observed that the best k value was 9, which gave an Accuracy of 0.7640956 and a Kappa value of 0.4681284 on the training data. When the test data was used we saw an Accuracy of 0.7812 and a Kappa value of 0.4894.
+It was observed that the best k value was 5, which gave an Accuracy of 0.7380823 and a Kappa value of 0.4115603 on the training data. When the test data was used we saw an Accuracy of 0.7656 and a Kappa value of 0.4429.
 
 ### Support Vector Machines
 Support Vector Machine is supervised learning and constructs hyper plane surfaces that predicts whether the examples fall into one class or another separated by a margin and classifies examples with the largest margin.
@@ -256,7 +258,7 @@ svmRGridReduced <- expand.grid(.sigma = sigmaRangeReduced[1],
 SVMTune <- train(x = diabetesYesNo[-9],
                  y = diabetesYesNo$Outcome,
                  method = "svmRadial", 
-                 metric = "ROC",
+                 metric = "Accuracy",
                  preProc = c("center", "scale"),
                  tuneGrid = svmRGridReduced,
                  fit = FALSE,
@@ -280,7 +282,7 @@ svm.conf
 
 
 **Observation:**
-It was observed that the best C value was .5, which gave an Accuracy of 0.7638403 and a Kappa value of 0.446082093 on the training data. When the test data was used we saw an Accuracy of 0.7448 and a Kappa value of 0.3713.
+It was observed that the best C value was .125, which gave an Accuracy of 0.7535664 and a Kappa value of 0.4587120 on the training data. When the test data was used we saw an Accuracy of 0.7865 and a Kappa value of 0.4879.
 
 
 ### Random Forest
@@ -301,6 +303,7 @@ rf.fit <- train(x = diabetesTrain[-9],
                 method = "rf",
                 tuneGrid = mtryGrid,
                 ntree = 200,
+                metric="Accuracy",
                 importance = TRUE,
                 trControl = ctrl)
 rf.fit
@@ -309,12 +312,12 @@ proc.time() - ptm
 
 Model results using test data.
 ```{r, echo=FALSE}
-rf.conf = confusionMatrix(data = predict(rf.fit, diabetesTest[-9]), reference = diabetesTest$Outcome)
+rf.conf = confusionMatrix(data = predict(rf.fit, diabetesTest[-9]), reference = diabetesTest$Outcome, positive="1")
 rf.conf
 ```
 
 **Observation:**
-It was observed that the best mtry value was 9, which gave an Accuracy of 0.7587114 and a Kappa value of 0.4490350 on the training data. When the test data was used we saw an Accuracy of 0.7865 and a Kappa value of 0.5108.
+It was observed that the best mtry value was 8, which gave an Accuracy of 0.7481549 and a Kappa value of 0.4460567 on the training data. When the test data was used we saw an Accuracy of 0.75 and a Kappa value of 0.3391.
 
 
 ### Logistic Regression Model 
@@ -338,14 +341,14 @@ logisticTune
 
 Model results using test data.
 ```{r, echo=FALSE}
-log.conf = confusionMatrix(data = predict(logisticTune, diabetesTest[-9]), reference = diabetesTest$Outcome)
+log.conf = confusionMatrix(data = predict(logisticTune, diabetesTest[-9]), reference = diabetesTest$Outcome, positive="1")
 log.conf
 ```
 
 **Observation:**
-It was observed that the best decay value was 0.1, which gave an Accuracy of 0.7517995 and a Kappa value of 0.4199683 on the training data. When the test data was used we saw an Accuracy of 0.8385 and a Kappa value of 0.6217.
+It was observed that the best decay value was 0.0001, which gave an Accuracy of 0.7587719 and a Kappa value of 0.4492371 on the training data. When the test data was used we saw an Accuracy of 0.7812 and a Kappa value of 0.4998.
 
-### Conclusion:
+## Conclusion:
 
 #### Summary of Test Results
 ```{r, echo=FALSE}
@@ -383,10 +386,8 @@ row.names(performance.results) = c("KNN", "SVM", "Random Forest", "Logistic")
 performance.results
 ```
 
-
-
-
 ```{r, echo=FALSE}
+set.seed(500)
 testResults <- data.frame(knn = predict(knn.model, diabetesTest[-9],type="prob")[,1])
 
 testResults$SVM <- data.frame(svm = predict(SVMTune, diabetesTestYesNo[,1:8],type="prob")[,1])
@@ -396,8 +397,9 @@ testResults$RF = predict(rf.fit, diabetesTest[-9],type="prob")[,1]
 testResults$Logistic = predict(logisticTune, diabetesTest[-9],type="prob")[,1]
 ```
 
-
+#### ROC Curve
 ```{r, echo=FALSE, warning=FALSE}
+
 library(pROC)
 
 # ROC for KNN
@@ -417,12 +419,33 @@ LOGROC <- roc(diabetesTest$Outcome, testResults$Logistic)
 lines(LOGROC, col=4, lty=4, lwd=2)
 
 legend('bottomright', c('KNN', 'RF', 'SVM','LOG'), col=1:4, lty=1:4,lwd=2)
+title("ROC Curves")
+```
+
+SVM
+```{r, echo=FALSE}
+SVMROC$auc
+```
+
+Logistic
+```{r, echo=FALSE}
+LOGROC$auc
+```
+
+KNN
+```{r, echo=FALSE}
+KNNROC$auc
+```
+
+Random Forest
+```{r, echo=FALSE}
+RFROC$auc
 ```
 
 
-**Conclusion:**
-In conclusion, the method that performs the best model was the Logistic Regression. As a result of Logistic Regression performing the best, it is a binary approach which works well with the Pima Indian dataset as it was a binary dataset. Our conclusion is based on the Kappa and Accuracy levels. 
 
+**Conclusion:**
+Looking over all the metrics to evaluate performance it was observed that Logistic Regression had the best performance for the Kappa statistic of 0.4997519 and the ROC curve with an area of 0.8758. The SVM model seemed to perform better when using the accuracy statistic with a value of 0.7864583 compared to the accuracy from the Logistic Regression model of 0.7812500. Overall we would recommend the Logistic Regression model, as the Kappa and ROC curve were observed to be the best performing. Additionally, the Outcome variable capturing Diabetes status is binary, which works well with a Logistic Regression model. 
 
 
 
