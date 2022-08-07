@@ -40,13 +40,15 @@ library(naniar)
 
 The background of the study for the Pima Indian Dataset was conducted by scientists to analyze the significance of health related variables (predictors) to diabetes in Pima Indian Women. The samples' population was made up of females aged 21 years and older. Alongside, the population had an heritage of diabetes and digestive and kidney diseases.
 
-The objective of this analysis is to predict if a patient has diabetes by applying various statistical machine learning methods. The patient data can be found from the Pima Indians Diabetes Data.
+Type 2 diabetes is a lifelong and life altering chronic illness affecting 462 million people worldwide (~6.3% of the global population), in which the pancreas can no longer produce sufficient insulin to control blood sugar in the body, there is no cure . There are several factors that can lead to and increased risk of developing type 2 Diabetes, including but not limited to, genetic and environmental components.
 
-The machine learning methods used to construct this analysis were:`K-nearest neighbors,` `Logistic Regression,` `Random Forest,` and `Support Vector Machine`.
+The exponentially higher occurrence of diabetes in the Pima Indian population means the early detection of this disease in this underserved communities is extremely important due to the limited access to advanced health care. Earlier diagnosis, prevents the progression of the disease and escalation of the complexity of treatments needed to preserve the quality of life in the patients.
+
+We will explore four different Machine Learning models to establish which one performs the best in predicting diabetes in Pima Indians. The machine learning methods used to construct this analysis were:`K-nearest neighbors,` `Logistic Regression,` `Random Forest,` and `Support Vector Machine`.
 
 ## Data Structure:
 
-The structure of the data consists of 768 observations and 9 variables. Out of those 9 variables, there is one target variable, `Outcome`. The other eight variables are the predictor variables and includes the number of pregnancies the patient has had, their BMI, insulin level, age, and so on. Outcome was listed as 1 for a person with diabetes, and 0 for a person without diabetes. The data contains about twice as many examples of people without diabetes compared to people with diabetes.
+The structure of the data consists of 768 observations and 9 variables. Out of those 9 variables, there is one target variable, `Outcome`. The other eight variables are the predictor variables and includes the number of pregnancies the patient has had, their BMI, insulin level, age, and so on. Outcome was listed as 1 for a person with diabetes, and 0 for a person without diabetes. The data contains approximately twice as many examples of people without diabetes compared to people with diabetes.
 
 ```{r, include=FALSE}
 diabetes <- read_csv("diabetes.csv")
@@ -84,6 +86,7 @@ Before we could apply any methods to analyze our data, we needed to determine if
 
 #### Near Zero Variance
 ```{r,  results='hide', echo=FALSE}
+set.seed(300)
 #I hid this output for now as I don't think it adds much visually in the report
 
 #check for zero variance first
@@ -107,7 +110,7 @@ diabetesTest <- diabetes[-inOutcomeTraining,]
 ```{r, echo=FALSE}
 #check for correlation
 corr <- cor(diabetesTrain[-9])
-corr
+#corr
 ##correlation matrix
 corrplot::corrplot(corr, method = 'number', tl.cex = .35)
 
@@ -136,6 +139,7 @@ diabetes$BloodPressure <- na_if(diabetes$BloodPressure, 0)
 diabetes$SkinThickness <- na_if(diabetes$SkinThickness, 0)
 diabetes$BMI <- na_if(diabetes$BMI, 0)
 ```
+
 ```{r, warning=FALSE, echo=FALSE}
 vis_miss(diabetes)
 ```
@@ -166,12 +170,16 @@ diabetesTrain$BMI<-ifelse(diabetesTrain$BMI  == 0, round(meanBMI ,0), diabetesTr
 #data after treating missing values
 summary(diabetesTrain)
 
+
+```
+```{r, echo=FALSE, results='hide'}
 #correlation after missing values
 num_vars <- unlist(lapply(diabetesTrain, is.numeric))
 dia_nums <- diabetesTrain[ , num_vars]
 corr2 <- cor(dia_nums)
 corrplot::corrplot(corr2, method = 'number', tl.cex = .35)
 ```
+
 
 **Observation:**
 Insulin and SkinThickness are missing a significant number of observations. Two approaches were tried. The first was replacing the missing values with the column mean, and the second was removing the Insulin and SkinThickness columns. Either approach gave similar model results so it was decided to move forward with replacing the missing values with column mean for all columns.
@@ -225,8 +233,7 @@ knn.conf
 ```
 
 **Observation:**
-
-It was observed that the best k value was 5, which gave an Accuracy of 0.7380823 and a Kappa value of 0.4115603 on the training data. When the test data was used we saw an Accuracy of 0.7656 and a Kappa value of 0.4429.
+It was observed that the best k value was 6, which gave an Accuracy of 0.7551288  and a Kappa value of 0.4377841 on the training data. When the test data was used we saw an Accuracy of 0.7083 and a Kappa value of 0.3502.
 
 ### Support Vector Machines
 Support Vector Machine is supervised learning and constructs hyper plane surfaces that predicts whether the examples fall into one class or another separated by a margin and classifies examples with the largest margin.
@@ -282,7 +289,7 @@ svm.conf
 
 
 **Observation:**
-It was observed that the best C value was .125, which gave an Accuracy of 0.7535664 and a Kappa value of 0.4587120 on the training data. When the test data was used we saw an Accuracy of 0.7865 and a Kappa value of 0.4879.
+It was observed that the best C value was .5, which gave an Accuracy of 0.7655944  and a Kappa value of 0.4437280 on the training data. When the test data was used we saw an Accuracy of 0.776 and a Kappa value of 0.4823.
 
 
 ### Random Forest
@@ -317,7 +324,7 @@ rf.conf
 ```
 
 **Observation:**
-It was observed that the best mtry value was 8, which gave an Accuracy of 0.7481549 and a Kappa value of 0.4460567 on the training data. When the test data was used we saw an Accuracy of 0.75 and a Kappa value of 0.3391.
+It was observed that the best mtry value was 10, which gave an Accuracy of 0.7779641 and a Kappa value of 0.4890388 on the training data. When the test data was used we saw an Accuracy of 0.6823 and a Kappa value of 0.2438.
 
 
 ### Logistic Regression Model 
@@ -346,7 +353,7 @@ log.conf
 ```
 
 **Observation:**
-It was observed that the best decay value was 0.0001, which gave an Accuracy of 0.7587719 and a Kappa value of 0.4492371 on the training data. When the test data was used we saw an Accuracy of 0.7812 and a Kappa value of 0.4998.
+It was observed that the best decay value was 0.1, which gave an Accuracy of 0.7620577  and a Kappa value of 0.4293513 on the training data. When the test data was used we saw an Accuracy of 0.8021 and a Kappa value of 0.5566.
 
 ## Conclusion:
 
@@ -422,30 +429,31 @@ legend('bottomright', c('KNN', 'RF', 'SVM','LOG'), col=1:4, lty=1:4,lwd=2)
 title("ROC Curves")
 ```
 
-SVM
 ```{r, echo=FALSE}
-SVMROC$auc
-```
+AreaUnderCurve<-numeric(0)
+AreaUnderCurve[1] = KNNROC$auc
 
-Logistic
-```{r, echo=FALSE}
-LOGROC$auc
-```
+AreaUnderCurve[2] = SVMROC$auc
 
-KNN
-```{r, echo=FALSE}
-KNNROC$auc
-```
+AreaUnderCurve[3] = RFROC$auc
 
-Random Forest
-```{r, echo=FALSE}
-RFROC$auc
+AreaUnderCurve[4] = LOGROC$auc
+
+roc.results = cbind(AreaUnderCurve)
+row.names(roc.results) = c("KNN", "SVM", "Random Forest", "Logistic")
+roc.results
 ```
 
 
 
 **Conclusion:**
-Looking over all the metrics to evaluate performance it was observed that Logistic Regression had the best performance for the Kappa statistic of 0.4997519 and the ROC curve with an area of 0.8758. The SVM model seemed to perform better when using the accuracy statistic with a value of 0.7864583 compared to the accuracy from the Logistic Regression model of 0.7812500. Overall we would recommend the Logistic Regression model, as the Kappa and ROC curve were observed to be the best performing. Additionally, the Outcome variable capturing Diabetes status is binary, which works well with a Logistic Regression model. 
+
+Looking over all the metrics to evaluate performance it was observed that Logistic Regression had the best performance for both Accuracy and Kappa statistic with values of  0.8020833 and 0.5565820, as well as the best ROC curve with an area of 0.8624381. 
+
+Overall we would recommend the Logistic Regression model, as the Accuracy, Kappa, and ROC curve were observed to be the best performing. Additionally, the Outcome variable capturing Diabetes status is binary, which works well with a Logistic Regression model. 
+
+When looking at the number of False Negatives (predicting non-diabetic when diabetic), Logistic Regression still performs the best. The number of False Negatives was the lowest at 29 compared to the worst model having 51 False Negatives. Additionally, Logistic Regression performed second best when it came to False Positives at 9 compared to the best at 6. The overall number of incorrectly predicted outcomes is lowest with Logistic Regression compared to the other three models.
+
 
 
 
